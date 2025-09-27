@@ -4,8 +4,8 @@ import popper from "cytoscape-popper";
 
 cytoscape.use(popper);
 
-const KEGG_KGML = (id) => `/api/kegg/${id}/kgml`;
-const KEGG_BULK_GENES = (geneIdList) => `/api/kegg/genes/${geneIdList.join(',')}`;
+const KEGG_KGML = (id) => `http://localhost:3001/api/kegg/${id}/kgml`;
+const KEGG_BULK_GENES = (geneIdList) => `http://localhost:3001/api/kegg/genes/${geneIdList.join(',')}`;
 
 // Cache for gene name lookups to avoid repeated API calls
 const geneNameCache = new Map();
