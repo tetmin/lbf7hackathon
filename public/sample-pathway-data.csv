@@ -1,0 +1,8 @@
+source_id,target_id,interaction_type,fold_change,p_value,pathway_id
+78,79,inhibition,-0.8,0.001,hsa04150
+81,82,activation,0.9,0.002,hsa04150
+83,84,activation,0.5,0.01,hsa04150
+85,86,inhibition,-0.3,0.05,hsa04150
+90,91,binding,0.0,0.8,hsa04150
+95,96,phosphorylation,0.7,0.003,hsa04150
+
