@@ -4,8 +4,10 @@ import popper from "cytoscape-popper";
 
 cytoscape.use(popper);
 
-const KEGG_KGML = (id) => `http://localhost:3001/api/kegg/${id}/kgml`;
-const KEGG_BULK_GENES = (geneIdList) => `http://localhost:3001/api/kegg/genes/${geneIdList.join(',')}`;
+// Use localhost proxy for development, Vercel API routes for production
+const API_BASE = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : '';
+const KEGG_KGML = (id) => `${API_BASE}/api/kegg/${id}/kgml`;
+const KEGG_BULK_GENES = (geneIdList) => `${API_BASE}/api/kegg/genes/${geneIdList.join(',')}`;
 
 // Cache for gene name lookups to avoid repeated API calls
 const geneNameCache = new Map();

@@ -3,10 +3,5 @@
   "outputDirectory": "dist",
   "devCommand": "pnpm dev",
   "installCommand": "pnpm install",
-  "framework": "vite",
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs18.x"
-    }
-  }
+  "framework": "vite"
 }
