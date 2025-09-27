@@ -4,8 +4,8 @@ import popper from "cytoscape-popper";
 
 cytoscape.use(popper);
 
-const KEGG_KGML = (id) => `http://localhost:3001/api/kegg/${id}/kgml`;
-const KEGG_BULK_GENES = (geneIdList) => `http://localhost:3001/api/kegg/genes/${geneIdList.join(',')}`;
+const KEGG_KGML = (id) => `/api/kegg/${id}/kgml`;
+const KEGG_BULK_GENES = (geneIdList) => `/api/kegg/genes/${geneIdList.join(',')}`;
 
 // Cache for gene name lookups to avoid repeated API calls
 const geneNameCache = new Map();
@@ -121,9 +121,6 @@ function parseKeggGeneEntry(geneEntry, geneId, fallbackName) {
 
 // Bulk function to get standardized gene names from KEGG REST API
 async function getBulkStandardizedGeneNames(geneNodes, entries) {
-  // Temporary: Clear cache to debug
-  console.log(`Clearing gene cache (had ${geneNameCache.size} entries)`);
-  geneNameCache.clear();
   
   // Collect all unique gene IDs from the pathway
   const uniqueGeneIds = new Set();
@@ -131,10 +128,7 @@ async function getBulkStandardizedGeneNames(geneNodes, entries) {
   
   geneNodes.forEach(node => {
     const keggId = node.data('keggId');
-    if (!keggId) {
-      console.log(`Node ${node.id()} has no keggId`);
-      return;
-    }
+    if (!keggId) return;
     
     // Extract individual gene IDs (e.g., "hsa:5604 hsa:5605" -> ["hsa:5604", "hsa:5605"])
     const geneIds = keggId.split(/\s+/).filter(id => id.includes(':') && id.startsWith('hsa:') && id.match(/^hsa:\d+$/));
@@ -161,8 +155,7 @@ async function getBulkStandardizedGeneNames(geneNodes, entries) {
   }
   
   const geneIdList = Array.from(uniqueGeneIds);
-  console.log(`Fetching ${geneIdList.length} genes in bulk from KEGG API:`, geneIdList);
-  console.log(`Cache currently has ${geneNameCache.size} genes:`, Array.from(geneNameCache.keys()));
+  console.log(`Fetching ${geneIdList.length} genes in bulk from KEGG API`);
   
   try {
     // Make bulk API call
@@ -250,16 +243,6 @@ async function getBulkStandardizedGeneNames(geneNodes, entries) {
     });
     
     console.log(`Updated ${updatedCount} gene names from bulk KEGG API response`);
-    console.log(`Final cache size: ${geneNameCache.size}`, Array.from(geneNameCache.keys()));
-    
-    // Debug: Check what data we actually cached
-    geneNameCache.forEach((data, geneId) => {
-      console.log(`Cached ${geneId}:`, {
-        symbol: data.symbol,
-        fullName: data.fullName,
-        uniprotId: data.uniprotId
-      });
-    });
     
   } catch (error) {
     console.error("Failed to fetch bulk gene info:", error);
@@ -762,19 +745,16 @@ export default function KeggPathwayViewer({
           let multipleGenes = [];
           if (nodeType === "gene" && n.data("keggId")) {
             const geneIds = n.data("keggId").split(/\s+/).filter(id => id.startsWith('hsa:'));
-            console.log(`Click on gene node ${n.id()}: keggId="${n.data("keggId")}", parsed IDs:`, geneIds);
             
             if (geneIds.length > 1) {
               // Multiple genes - collect data for each
               multipleGenes = geneIds.map(geneId => {
                 const cachedData = geneNameCache.get(geneId);
-                console.log(`Gene ${geneId} cached data:`, cachedData ? 'FOUND' : 'NOT FOUND');
                 return {
                   keggId: geneId,
                   geneData: cachedData || null
                 };
               });
-              console.log(`Created multipleGenes array:`, multipleGenes);
             }
           }
           
@@ -790,7 +770,6 @@ export default function KeggPathwayViewer({
             x: e?.x, y: e?.y, w: e?.w, h: e?.h
           };
           
-          console.log(`Setting side info for node ${n.id()}:`, sideInfoData);
           setSideInfo(sideInfoData);
         });
 

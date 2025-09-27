@@ -50,5 +50,9 @@ pids
 # Coverage directory used by tools like istanbul
 coverage/
 
-# Cloudflare
-.wrangler/
+# Old proxy files (no longer needed with Vercel)
+proxy-server.js
+proxy-package.json
+
+# Vercel
+.vercel

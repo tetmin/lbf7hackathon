@@ -25,6 +25,11 @@ Interactive KEGG pathway visualization web app built with React and Cytoscape.js
    ```bash
    pnpm dev
    ```
+   
+   **Note:** For local development with API routes, use Vercel CLI:
+   ```bash
+   npx vercel dev
+   ```
 
 3. **Open your browser:**
    Navigate to `http://localhost:3000`
@@ -41,11 +46,11 @@ Interactive KEGG pathway visualization web app built with React and Cytoscape.js
    pnpm preview
    ```
 
-3. **Deploy to Cloudflare Pages:**
-   - Connect your GitHub repository to Cloudflare Pages
-   - Set build command: `pnpm build`
-   - Set build output directory: `dist`
+3. **Deploy to Vercel:**
+   - Connect your GitHub repository to Vercel
+   - Vercel auto-detects Vite projects and configures build settings
    - Auto-deployment will trigger on git push
+   - API routes are automatically deployed as serverless functions
 
 ## Usage
 
@@ -84,30 +89,26 @@ const overlay = {
 
 Values should be between -1 (red, inhibition) and +1 (blue, activation).
 
-## CORS Proxy (if needed)
+## API Integration
 
-If you encounter CORS issues with the KEGG API, use the included proxy server:
+The app uses Vercel API routes to proxy KEGG REST API calls and avoid CORS issues:
 
-1. **Install proxy dependencies:**
-   ```bash
-   cp proxy-package.json package.json
-   pnpm install
-   ```
+- `/api/kegg/[pathwayId]/kgml` - Fetch pathway KGML data
+- `/api/kegg/[pathwayId]/image` - Fetch pathway PNG images  
+- `/api/kegg/genes/[geneIds]` - Bulk fetch gene information
 
-2. **Start proxy server:**
-   ```bash
-   node proxy-server.js
-   ```
-
-3. **Update API URLs in KeggPathwayViewer.jsx:**
-   ```javascript
-   const KEGG_KGML = (id) => `http://localhost:3001/api/kegg/${id}/kgml`;
-   const KEGG_PNG = (id) => `http://localhost:3001/api/kegg/${id}/image`;
-   ```
+These are automatically deployed as serverless functions on Vercel.
 
 ## Project Structure
 
 ```
+api/                             # Vercel serverless functions
+├── kegg/
+│   ├── [pathwayId]/
+│   │   ├── kgml.js              # KGML data proxy
+│   │   └── image.js             # PNG image proxy
+│   └── genes/
+│       └── [geneIds].js         # Bulk gene data proxy
 src/
 ├── components/
 │   └── KeggPathwayViewer.jsx    # Main pathway visualization component
@@ -128,7 +129,7 @@ src/
 - **Visualization:** Cytoscape.js with Popper.js
 - **Package Manager:** pnpm
 - **Linting/Formatting:** Biome
-- **Deployment:** Cloudflare Pages
+- **Deployment:** Vercel (with serverless functions)
 
 ## Popular KEGG Pathways
 
